@@ -1,17 +1,21 @@
 workflows:
   android-apk:
     name: PulseDeck Android APK
-    instance_type: mac_mini_2
+    instance_type: mac_mini_m2
+
     environment:
       flutter: stable
       java: 17
+
     scripts:
       - name: Flutter doctor
         script: |
           flutter doctor -v
+
       - name: Get dependencies
         script: |
           flutter pub get
+
       - name: Ensure Gradle wrapper exists
         script: |
           cd android
@@ -19,15 +23,18 @@ workflows:
             gradle wrapper --gradle-version 8.10.2
           fi
           chmod +x gradlew || true
+
       - name: Build release APK
         script: |
           flutter build apk --release
+
     artifacts:
       - build/app/outputs/flutter-apk/*.apk
+
     publishing:
       email:
         recipients:
-          - your-email@example.com
+          - kharyurde@gmail.com
         notify:
           success: false
           failure: true
