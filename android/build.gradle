@@ -7,9 +7,17 @@ allprojects {
 
 rootProject.buildDir = '../build'
 
+// add to the bottom of android/build.gradle
 subprojects {
-    project.buildDir = "${rootProject.buildDir}/${project.name}"
-    project.evaluationDependsOn(':app')
+    afterEvaluate { project ->
+        if (project.hasProperty('android') && !project.android.namespace) {
+            def manifest = project.file('src/main/AndroidManifest.xml')
+            if (manifest.exists()) {
+                def pkg = new XmlSlurper().parse(manifest).@package.text()
+                if (pkg) project.android.namespace = pkg
+            }
+        }
+    }
 }
 
 tasks.register('clean', Delete) {
