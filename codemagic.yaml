@@ -5,6 +5,7 @@ workflows:
     environment:
       flutter: 3.24.0
       java: 17
+      instance_type: mac_mini_m2
       vars:
         PACKAGE_NAME: "com.kayode.beatflow"
     scripts:
@@ -32,6 +33,7 @@ workflows:
     environment:
       flutter: 3.24.0
       java: 17
+      instance_type: mac_mini
       vars:
         PACKAGE_NAME: "com.kayode.beatflow"
     scripts:
@@ -45,7 +47,7 @@ workflows:
         script: |
           flutter pub get
 
-      - name: Build release APK (unsigned)
+      - name: Build release APK
         script: |
           flutter build apk --release --no-shrink
 
