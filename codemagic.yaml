@@ -1,0 +1,55 @@
+workflows:
+  beatflow-android:
+    name: BeatFlow Android APK
+    max_build_duration: 60
+    environment:
+      flutter: 3.19.0
+      java: 17
+      groups:
+        - keystore_credentials  # optional - for signed builds
+      vars:
+        PACKAGE_NAME: "com.kayode.beatflow"
+    scripts:
+      - name: Set up local.properties
+        script: |
+          echo "flutter.sdk=$FLUTTER_ROOT" > "$CM_BUILD_DIR/android/local.properties"
+          echo "flutter.versionName=1.0.0" >> "$CM_BUILD_DIR/android/local.properties"
+          echo "flutter.versionCode=1" >> "$CM_BUILD_DIR/android/local.properties"
+
+      - name: Get Flutter packages
+        script: |
+          flutter pub get
+
+      - name: Flutter analyze
+        script: |
+          flutter analyze --no-fatal-infos || true
+
+      - name: Build APK (debug - no signing needed)
+        script: |
+          flutter build apk --debug --no-shrink
+
+      # Uncomment below for release APK with signing:
+      # - name: Build Release APK
+      #   script: |
+      #     echo $CM_KEYSTORE | base64 --decode > /tmp/keystore.jks
+      #     flutter build apk --release \
+      #       --no-shrink \
+      #       --dart-define=FLUTTER_BUILD_NAME=1.0.0 \
+      #       --dart-define=FLUTTER_BUILD_NUMBER=1
+      #   environment:
+      #     CM_KEYSTORE: $CM_KEYSTORE
+      #     CM_KEY_ALIAS: $CM_KEY_ALIAS
+      #     CM_KEY_PASSWORD: $CM_KEY_PASSWORD
+      #     CM_KEYSTORE_PASSWORD: $CM_KEYSTORE_PASSWORD
+
+    artifacts:
+      - build/app/outputs/flutter-apk/*.apk
+      - build/app/outputs/apk/debug/*.apk
+
+    publishing:
+      email:
+        recipients:
+          - kharyurde@gmail.com  # Replace with your email
+        notify:
+          success: true
+          failure: true
